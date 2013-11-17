@@ -1,4 +1,5 @@
-! (C) 2013 Charles Alston.
+! Copyright (C) 2013 Charles Alston.
+! See http://factorcode.org/license.txt for BSD license.
 USING: accessors arrays byte-arrays fry google.search io
 io.encodings.utf8 io.launcher kernel locals make memoize
 namespaces prettyprint sequences sequences.generalizations
