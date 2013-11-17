@@ -207,12 +207,12 @@ CONSTANT: kMDItem-table-style
           [ [ 64 wrap-string write ] with-cell ] each
         ] with-row
       ] each
-    ] tabular-output nl
+    ] tabular-output flush nl
 ;
 PRIVATE>
 
 ! display available kMDItem attributes in tabular form
-MEMO: kMDItems-table. ( -- ) all-kMDItem-attributes (kMDItems-table.) flush ;
+MEMO: kMDItems-table. ( -- ) all-kMDItem-attributes (kMDItems-table.) ;
 
 
 ! **** ANCILLARY INFO, MOTLEY EXAMPLES ***
