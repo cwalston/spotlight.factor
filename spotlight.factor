@@ -1,8 +1,8 @@
 ! (C) 2013 Charles Alston.
 USING: accessors arrays byte-arrays fry google.search io
-io.encodings.utf8 io.launcher kernel locals make namespaces
-sequences sequences.generalizations splitting strings
-unicode.categories vectors ;
+io.encodings.utf8 io.launcher kernel locals make memoize
+namespaces prettyprint sequences sequences.generalizations
+splitting strings unicode.categories vectors ;
 FROM: webbrowser => open-file open-url ;
 IN: spotlight
 
@@ -14,7 +14,6 @@ IN: spotlight
 ! -----
 ! TO DO:
 ! -need to test sudo-mdutil; intercept auth prompt
-! -work out API call to MDSchemaCopyAllAttributes()
 ! -handle case-sensitivity properly (OS X)
 ! -test composing variant shell command constructions,
 !  i.e., those which do or don't need spaces, parens,
@@ -175,6 +174,46 @@ SYMBOL: search-vec
       "mdimport" 1vector options dup empty? not ! ( -- vector opt ? )
       [ suffix! ] [ drop ] if  abspath suffix!
       utf8-stream-lines ;
+
+! memoize all kMDItem attributes from current schema
+MEMO: all-kMDItem-attributes ( -- seq ) ! of sequences of 4 strings
+      "mdimport" "-A" 2array utf8-stream-lines
+      [ "'kMDItem" head? ] filter [ "\t\t" split harvest ] map
+      [ [ but-last unclip drop ] map ] map
+;
+
+<PRIVATE
+USE: colors
+USE: io.styles
+USE: wrap.strings
+
+CONSTANT: kMDItem-table-style
+    H{
+        { table-gap { 20 5 } }
+        {
+            table-border
+            T{ rgba
+                { red 0.8 }
+                { green 0.8 }
+                { blue 0.8 }
+                { alpha 1.0 }
+            }
+        }
+    } inline
+
+: (kMDItems-table.) ( seq --  )
+    kMDItem-table-style
+    [ [ [
+          [ [ 64 wrap-string write ] with-cell ] each
+        ] with-row
+      ] each
+    ] tabular-output nl
+;
+PRIVATE>
+
+! display available kMDItem attributes in tabular form
+MEMO: kMDItems-table. ( -- ) all-kMDItem-attributes (kMDItems-table.) flush ;
+
 
 ! **** ANCILLARY INFO, MOTLEY EXAMPLES ***
 ! instruct mds (MetaDataServer) to clear out the metadata cache and rebuild from scratch,
